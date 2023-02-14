@@ -48,49 +48,6 @@ class Tank(pygame.sprite.Sprite):
         self.bodyRect = self.bodyImage.get_rect(center = (self.x, self.y))
         self.turretRect = self.turretImage.get_rect(center = (self.x, self.y))
 
-    def drawRadar(self):
-        rect = pygame.Rect(self.x - self.radarRadius, 
-                           self.y - self.radarRadius, 
-                           self.radarRadius * 2,
-                           self.radarRadius * 2)
-                        
-        for i in range(80):
-            line = [(self.x, self.y), (self.x + self.radarRadius*np.sin(self.radDir + i * np.pi/512),
-                                       self.y + self.radarRadius*np.cos(self.radDir + i * np.pi/512))]
-            pygame.draw.line(self.surface, (0, 255 - 3.18*i, 0 ), *line)
-            
-        pygame.draw.line(self.surface, GREEN, *self.radLine)
-        for item in self.game.objects:
-            if type(item) == Bullet and item.origin != self:
-                if item.rect.clipline(*self.radLine):
-                    item.tagTime += 5
-
-                else:
-                    dist = ((item.x - self.x) ** 2 + (item.y - self.y) ** 2) ** .5
-                    if item.tagTime >= 0 and self.radarRadius >= dist:
-                        rect = item.rect.copy()
-                        rect.height = 4 * item.rect.height
-                        rect.width = 4 * item.rect.width
-                        rect.center = item.rect.center
-                        pygame.draw.rect(self.surface, RED, rect, 2)
-                    if item.tagTime > 0:
-                        item.tagTime -= 1
-
-            if type(item) == Tank:
-                if item.bodyRect.clipline(*self.radLine):
-                    item.tagTime += 5
-                else:
-                    dist = ((item.x - self.x) ** 2 + (item.y - self.y) ** 2)**(1/2)
-                    if item.tagTime >= 0 and self.radarRadius >= dist:
-                        rect = item.bodyRect.copy()
-                        rect.height = 2 * item.bodyRect.height
-                        rect.width = 2 * item.bodyRect.width
-                        rect.center = item.bodyRect.center
-                        pygame.draw.rect(self.surface, RED, rect, 2)
-                    if item.tagTime > 0:
-                        item.tagTime -= 1
-        
-
     def rotateBodyCC(self):
         self.dir -= BODY_ROT_ANGLE
         self.dir = self.dir % 360
