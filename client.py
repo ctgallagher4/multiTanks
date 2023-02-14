@@ -4,6 +4,7 @@ import pickle
 from Utilities.Constants import *
 from Utilities.__init__ import *
 from Objects.Tank import Tank
+import sys
 
 class Transciever:
 
@@ -39,8 +40,8 @@ class Transciever:
     def setup(self):
         self.player1 = Tank(self, self.surface, "assets/tank_body.png", 
                         "assets/turret.png", WIDTH/2, HEIGHT/2, lightOn = False)
-        self.player2 = Tank(self, self.surface, "assets/tank_body.png", 
-                        "assets/turret.png", WIDTH/2, HEIGHT/2, lightOn = False)
+        self.player2 = Tank(self, self.surface, "assets/tank_body_red.png", 
+                        "assets/turret_red.png", WIDTH/2, HEIGHT/2, lightOn = False)
 
     def pause(self):
         '''A method to pause the game'''
@@ -60,7 +61,7 @@ class Transciever:
         self.surface.fill(WHITE)
 
     def tickFlip(self):
-        self.clock.tick(10)
+        self.clock.tick(FRAME_RATE)
         pygame.display.update()
 
     def update(self):
@@ -70,12 +71,11 @@ class Transciever:
                                     "y": round(self.player1.y, 3),
                                     "dir": round(self.player1.dir, 3),
                                     "turDir": round(self.player1.turDir, 0)}})
-        self.sendSock.sendto(msg,(self.ipSend, self.portSend))
+        self.sendSock.sendto(msg, (self.ipSend, self.portSend))
 
     def recvServerUpdate(self):
         data, addr = self.sendSock.recvfrom(1024)
         message = dict(pickle.loads(data))
-        print(message)
         if self.name == "player1" and ("player2" in message.keys()):
             self.player2.x = message["player2"]["x"]
             self.player2.y = message["player2"]["y"]
@@ -100,6 +100,10 @@ class Transciever:
 
 if __name__ == '__main__':
     name = input("player1/player2: ")
-    address = input("input server adress: ")
-    trans = Transciever(name, address, 5555)
+    address = input("local/remote: ")
+    if address == "local":
+        goTo = "127.0.0.1"
+    if address == "remote":
+        goTo = "143.42.128.64"
+    trans = Transciever(name, goTo, 5555)
     trans.run()

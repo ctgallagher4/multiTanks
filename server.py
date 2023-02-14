@@ -17,31 +17,30 @@ class Server:
         self.addrs = []
         self.lock = Lock()
         self.data = None
+        self.player1Loaded = False
+        self.player2Loaded = False
 
-    def listenThread(self):
+    def transcieve(self):
         while True:
-            data, addr = self.recvSock.recvfrom(1024)
-            with self.lock:
-                if addr not in self.addrs:
-                    self.addrs.append(addr)
-                self.data = data
-            time.sleep(1/1000)
+            data, recvAddr = self.recvSock.recvfrom(1024)
+            message = dict(pickle.loads(data))
+            if 'player1' in message.keys():
+                self.player1 = recvAddr
+                self.player1Loaded = True
+                if self.player2Loaded:
+                    self.recvSock.sendto(data, self.player2)
+                    print("sent", message)
+            elif 'player2' in message.keys():
+                self.player2 = recvAddr
+                self.player2Loaded = True
+                if self.player1Loaded:
+                    self.recvSock.sendto(data, self.player1)
+                    print("sent", message)
 
-    def broadcastThread(self):
-        while True:
-            with self.lock:
-                addrs = self.addrs.copy()
-                data = self.data
-            for addr in addrs:
-                self.recvSock.sendto(data, addr)
-            length = len(addrs)
-            sizeof = sys.getsizeof(self.data)
-            print(f"sent: {sizeof}, to {length}")
-            time.sleep(1/10)
+            time.sleep(1/100)
 
     def run(self):
-        Thread(target = self.listenThread).start()
-        Thread(target = self.broadcastThread).start()
+        self.transcieve()
 
 serv = Server()
 serv.run()

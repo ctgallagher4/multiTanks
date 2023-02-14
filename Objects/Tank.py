@@ -2,7 +2,6 @@ import pygame
 import numpy as np
 from Utilities.Constants import *
 from Utilities import *
-from Objects.Bullet import Bullet
 
 class Tank(pygame.sprite.Sprite):
 
