@@ -1,21 +1,18 @@
 import pickle
 import socket
 import time
-from threading import Thread, Lock
-import sys
 
 class Server:
 
     def __init__(self):
         self.ip = ""
         self.port = 5555
-        self.recvSock = socket.socket(socket.AF_INET, # Internet
-                      socket.SOCK_DGRAM) # UDPsock.bind((UDP_IP, UDP_PORT))
+        self.recvSock = socket.socket(socket.AF_INET,
+                                      socket.SOCK_DGRAM)
         self.recvSock.bind((self.ip, self.port))
         self.sendSock = socket.socket(socket.AF_INET, # Internet
-                        socket.SOCK_DGRAM) # UDPsock.bind((UDP_IP, UDP_PORT))
+                                      socket.SOCK_DGRAM)
         self.addrs = []
-        self.lock = Lock()
         self.data = None
         self.player1Loaded = False
         self.player2Loaded = False
