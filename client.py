@@ -105,10 +105,6 @@ if __name__ == '__main__':
     if address == "local":
         goTo = "127.0.0.1"
     if address == "remote":
-        goTo = "REDACTED :)" #your server's address goes here
-    if goTo == "REDACTED :)":
-        print("You never input a server on line 108 of client.py")
-        time.sleep(5)
-        sys.exit()
+        goTo = input("Type the server's address: ")
     trans = Transciever(name, goTo, 5555)
     trans.run()
