@@ -1,6 +1,6 @@
 # Multiplayer Tank Game
 
-These are the basics that you need for a ultiplayer tank game.
+These are the basics that you need for a multiplayer tank game.
 
 ## To play with friends across networks:
 - pip install -r requirements.txt
